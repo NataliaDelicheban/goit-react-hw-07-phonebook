@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import css from './ContactList.module.css';
 import { ContactElement } from '../ContactElement/ContactElement';
 
-export const ContactList = ({ contacts, onClick }) => {
+export const ContactList = ({ contacts, removeContact }) => {
     return (
         <ul className={css.contactList}>
             {contacts.map(({ id, name, number }) => {
@@ -12,7 +12,7 @@ export const ContactList = ({ contacts, onClick }) => {
                         key={id}
                         name={name}
                         number={number}
-                        onClick={() => onClick(id)}
+                        onClick={() => removeContact(id)}
                     />
                 );
             })}
