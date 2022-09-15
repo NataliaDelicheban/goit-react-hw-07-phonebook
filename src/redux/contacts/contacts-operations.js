@@ -1,20 +1,18 @@
+import { createAsyncThunk } from "@reduxjs/toolkit";
+
 import * as api from "shared/api/contacts";
 
-import actions from "./contacts-actions";
-
-export const fetchContacts = () => {
-    const func = async (dispatch) => {
+export const fetchContacts = createAsyncThunk(
+    "contacts/fetch",
+    async (_, thunkApi) => {
         try {
-            dispatch(actions.fetchContactsLoading());
             const data = await api.getContacts();
-            dispatch(actions.fetchContactsSuccess(data));
+            return data;
         } catch (error) {
-            dispatch(actions.fetchContactsError(error.message));
+            return thunkApi.rejectWithValue(error);
         }
-    };
-
-    return func;
-};
+    }
+);
 
 const isDublicate = ({ name}, contacts) => {
     const normalizedName = name.toLowerCase();
@@ -26,33 +24,36 @@ const isDublicate = ({ name}, contacts) => {
     return Boolean(result);
 }
 
-export const addContact = (data) => {
-    const func = async (dispatch, getState) => {
-        const { contacts } = getState();
-        if (isDublicate(data, contacts.items)) {
-            return alert(`${data.name} is already in contacts!`);
-        }
+export const addContact = createAsyncThunk(
+    "contacts/add",
+    async (data, { rejectWithValue }) => {
         try {
-            dispatch(actions.addContactLoading());
             const result = await api.addContact(data);
-            dispatch(actions.addContactSuccess(result));
+            return result;
         } catch (error) {
-            dispatch(actions.addContactError(error.message));
+            return rejectWithValue(error);
         }
-
-    };
-    return func;
-};
-
-export const removeContact = (id) => {
-    const func = async(dispatch) => {
-    try {
-        dispatch(actions.removeContactLoading());
-        await api.removeContact(id);
-        dispatch(actions.removeContactSuccess(id));
-    } catch (error) {
-        dispatch(actions.removeContactError(error.message));        
+    },
+    {
+        condition: (data, { getState }) => {
+            const { contacts } = getState();
+            if (isDublicate(data, contacts.items)) {
+                alert(`${data.name} is already in contacts!`);
+                return false;
+            }
+        }
     }
-    };
-    return func;
-}
+);
+
+export const removeContact = createAsyncThunk(
+    "contacts/remove",
+    async (id, {rejectWithValue}) => {
+        try {
+            await api.removeContact(id);
+            return id;
+        } catch (error) {
+            return rejectWithValue(error);
+        }
+        
+    }
+)

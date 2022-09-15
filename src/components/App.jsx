@@ -25,8 +25,8 @@ export function App() {
     dispatch(addContact(payload));
   };
 
-  const onRemoveContact = (payload) => {
-    dispatch(removeContact(payload));
+  const onRemoveContact = (id) => {
+    dispatch(removeContact(id));
   }
 
   const onSetFilter = ({target}) => {
