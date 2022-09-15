@@ -6,12 +6,12 @@ import { ContactElement } from '../ContactElement/ContactElement';
 export const ContactList = ({ contacts, removeContact }) => {
     return (
         <ul className={css.contactList}>
-            {contacts.map(({ id, name, number }) => {
+            {contacts.map(({ id, name, phone }) => {
                 return (
                     <ContactElement
                         key={id}
                         name={name}
-                        number={number}
+                        number={phone}
                         onClick={() => removeContact(id)}
                     />
                 );
@@ -25,7 +25,7 @@ ContactList.propTypes = {
         PropTypes.shape({
             id: PropTypes.string.isRequired,
             name: PropTypes.string.isRequired,
-            number: PropTypes.string.isRequired,
+            phone: PropTypes.string.isRequired,
             onClick: PropTypes.func,
         })
     ),

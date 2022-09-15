@@ -1,20 +1,36 @@
-import { createReducer } from "@reduxjs/toolkit";
-import { addContact, removeContact } from "./contacts-actions";
+import { createReducer, combineReducers } from "@reduxjs/toolkit";
+import actions from "./contacts-actions";
 
-// const initialContacts = [
-//   { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-//   { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-//   { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-//   { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-// ];
+const itemsReducer = createReducer([], {
+    [actions.fetchContactsSuccess]: (_, { payload }) => payload,
+    [actions.addContactSuccess]: (store, { payload }) => [...store, payload],
+    [actions.removeContactSuccess]: (store, {payload}) => store.filter(({ id }) => id !== payload),
+});
 
-// const initialStore = initialContacts;
+const loadingReducer = createReducer(false, {
+    [actions.fetchContactsLoading]: () => true,
+    [actions.fetchContactsSuccess]: () => false,
+    [actions.fetchContactsError]: () => false,
+    [actions.addContactLoading]: () => true,
+    [actions.addContactSuccess]: () => false,
+    [actions.addContactError]: () => false,
+    [actions.removeContactLoading]: () => true,
+    [actions.removeContactSuccess]: () => false,
+    [actions.removeContactError]: () => false,
+});
 
-const contactsReducer = createReducer([], {
-    [addContact.type]: (store, {payload}) => {
-        store.push(payload);
-    },
-    [removeContact.type]: (store, {payload}) => store.filter(({ id }) => id !== payload)
+const errorReducer = createReducer(null, {
+    [actions.fetchContactsLoading]: () => null,
+    [actions.fetchContactsError]: (_, { payload }) => payload,
+    [actions.addContactLoading]: () => null,
+    [actions.addContactError]: (_, { payload }) => payload,
+    [actions.removeContactLoading]: () => null,
+    [actions.removeContactError]: (_, {payload}) => payload,
+});
+
+const contactsReducer = combineReducers({
+    items: itemsReducer,
+    loading: loadingReducer,
+    error: errorReducer,
 })
-
 export default contactsReducer;

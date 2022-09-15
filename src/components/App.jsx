@@ -1,10 +1,11 @@
 import { useSelector, useDispatch } from 'react-redux';
+import { useEffect } from 'react';
 
 import { ContactForm } from './ContactForm/ContactForm';
 import { ContactList } from './ContactList/ContactList';
 import {Filter} from './Filter/Filter';
 
-import { addContact, removeContact } from 'redux/contacts/contacts-actions';
+import { fetchContacts, addContact, removeContact } from 'redux/contacts/contacts-operations';
 import { setFilter } from 'redux/filter/filter-actions';
 
 import { getFilteredContacts } from 'redux/contacts/contacts-selectors';
@@ -16,17 +17,12 @@ export function App() {
  
   const dispatch = useDispatch();
 
-  const onAddContact = ({ name, number }) => {
-    const commonName = contacts.find(contact => {
-      return contact.name.toLowerCase() === name.toLowerCase();
-    });
-    if (commonName) {
-      alert(`${name} is already in contacts!`);
-      return
-    };
+  useEffect(() => {
+    dispatch(fetchContacts())
+  }, [dispatch]);
 
-    const action = addContact({ name, number });
-    dispatch(action)
+  const onAddContact = (payload) => {
+    dispatch(addContact(payload));
   };
 
   const onRemoveContact = (payload) => {
